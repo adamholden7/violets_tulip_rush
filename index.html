@@ -29,8 +29,8 @@
       <section class="game-wrap card">
         <div id="game" class="game" aria-label="Game area">
           <aside class="love-meter" aria-label="Love meter">
-            <p>Love</p>
-            <div class="meter-track">
+            <p>Love Meter</p>
+            <div class="meter-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
               <div id="loveFill" class="meter-fill"></div>
             </div>
             <strong id="loveValue">0%</strong>
@@ -45,10 +45,6 @@
         </div>
       </section>
 
-      <section class="controls card">
-        <button id="leftBtn" class="btn ghost">Left</button>
-        <button id="rightBtn" class="btn ghost">Right</button>
-      </section>
     </main>
 
     <script src="script.js"></script>
