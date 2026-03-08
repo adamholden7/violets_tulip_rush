@@ -212,7 +212,7 @@ function endGame() {
   const finalLove = Math.max(0, Math.min(100, Math.round((finalScore / config.loveGoal) * 100)));
   overlayTitle.textContent = `Love Meter: ${finalLove}%`;
   overlayText.textContent =
-    "Happy Women's Day to the most special woman in my life. I love you and I cherish you Violet. I'm sending you all my love\n\nLove, Adam - Your Little Camp Boy";
+    "Happy Women's Day to the most special woman in my life. I love you Violet. I'm sending you all my love. \n\nLove, Adam - Your Little Camp Boy";
   startBtn.textContent = "Play Again";
   overlay.classList.add("final");
   overlay.hidden = false;
