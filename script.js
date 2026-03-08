@@ -1,8 +1,8 @@
 const config = {
   herName: "Violet",
   duration: 30,
-  spawnMs: 540,
-  itemFallSpeed: 1.6,
+  spawnMs: 500,
+  itemFallSpeed: 1.85,
   loveGoal: 220,
   cloudPenalty: 7,
   tulipPoints: 5,
@@ -32,8 +32,6 @@ const comboEl = document.getElementById("combo");
 const loveFillEl = document.getElementById("loveFill");
 const loveValueEl = document.getElementById("loveValue");
 
-const leftBtn = document.getElementById("leftBtn");
-const rightBtn = document.getElementById("rightBtn");
 const popup = document.getElementById("popup");
 const isMobile = window.matchMedia("(max-width: 760px)").matches;
 
@@ -45,10 +43,9 @@ let playerX = 50;
 let items = [];
 let timers = { spawn: null, tick: null, frame: null };
 let lastCheerAt = 0;
-let holdTimer = null;
 
 if (isMobile) {
-  config.spawnMs = 620;
+  config.spawnMs = 560;
 }
 
 const bestKey = `march8-best-${config.herName.toLowerCase()}`;
@@ -65,8 +62,10 @@ function updateHud() {
   timeEl.textContent = String(timeLeft);
   comboEl.textContent = `x${combo}`;
   const lovePercent = Math.max(0, Math.min(100, Math.round((Math.max(0, score) / config.loveGoal) * 100)));
-  loveFillEl.style.height = `${lovePercent}%`;
+  loveFillEl.style.width = `${lovePercent}%`;
   loveValueEl.textContent = `${lovePercent}%`;
+  const track = loveFillEl.parentElement;
+  if (track) track.setAttribute("aria-valuenow", String(lovePercent));
 }
 
 function setPlayerPosition() {
@@ -257,8 +256,6 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight") movePlayer(5);
 });
 
-leftBtn.addEventListener("click", () => movePlayer(-8));
-rightBtn.addEventListener("click", () => movePlayer(8));
 startBtn.addEventListener("click", startGame);
 
 function movePlayerToClientX(clientX) {
@@ -279,25 +276,6 @@ game.addEventListener("pointermove", (e) => {
   movePlayerToClientX(e.clientX);
 });
 
-function startHold(delta) {
-  movePlayer(delta);
-  holdTimer = window.setInterval(() => movePlayer(delta), 70);
-}
-
-function stopHold() {
-  if (!holdTimer) return;
-  window.clearInterval(holdTimer);
-  holdTimer = null;
-}
-
-leftBtn.addEventListener("pointerdown", () => startHold(-5));
-rightBtn.addEventListener("pointerdown", () => startHold(5));
-leftBtn.addEventListener("pointerup", stopHold);
-rightBtn.addEventListener("pointerup", stopHold);
-leftBtn.addEventListener("pointercancel", stopHold);
-rightBtn.addEventListener("pointercancel", stopHold);
-leftBtn.addEventListener("pointerleave", stopHold);
-rightBtn.addEventListener("pointerleave", stopHold);
 
 updateHud();
 setPlayerPosition();
