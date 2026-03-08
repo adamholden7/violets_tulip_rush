@@ -7,6 +7,7 @@ const config = {
   cloudPenalty: 7,
   tulipPoints: 5,
   heartPoints: 8,
+  kinderPoints: 10,
   cheerMessages: [
     "Way to go cutie patootie!",
     "You're so good!",
@@ -34,6 +35,7 @@ const loveValueEl = document.getElementById("loveValue");
 const leftBtn = document.getElementById("leftBtn");
 const rightBtn = document.getElementById("rightBtn");
 const popup = document.getElementById("popup");
+const isMobile = window.matchMedia("(max-width: 760px)").matches;
 
 let running = false;
 let score = 0;
@@ -43,6 +45,11 @@ let playerX = 50;
 let items = [];
 let timers = { spawn: null, tick: null, frame: null };
 let lastCheerAt = 0;
+let holdTimer = null;
+
+if (isMobile) {
+  config.spawnMs = 620;
+}
 
 const bestKey = `march8-best-${config.herName.toLowerCase()}`;
 let bestScore = 0;
@@ -75,17 +82,19 @@ function spawnItem() {
   if (!running) return;
 
   const roll = Math.random();
-  const type = roll < 0.62 ? "tulip" : roll < 0.88 ? "heart" : "cloud";
+  const type =
+    roll < 0.5 ? "tulip" : roll < 0.78 ? "heart" : roll < 0.94 ? "kinder" : "cloud";
   const el = document.createElement("div");
   el.className = "item";
 
   if (type === "tulip") el.textContent = "🌷";
   if (type === "heart") el.textContent = "💖";
+  if (type === "kinder") el.textContent = "🍫";
   if (type === "cloud") el.textContent = "☁️";
 
   const x = 6 + Math.random() * 88;
   el.style.left = `${x}%`;
-  el.style.top = "-36px";
+  el.style.transform = "translateY(-36px)";
 
   game.appendChild(el);
   items.push({ el, x, y: -36, type });
@@ -143,6 +152,7 @@ function handleCatch(type) {
 
   if (type === "tulip") score += config.tulipPoints * combo;
   if (type === "heart") score += config.heartPoints * combo;
+  if (type === "kinder") score += config.kinderPoints * combo;
   combo = Math.min(9, combo + 1);
 
   const now = Date.now();
@@ -159,7 +169,7 @@ function gameLoop() {
 
   items = items.filter((item) => {
     item.y += config.itemFallSpeed + Math.min(1.2, combo * 0.07);
-    item.el.style.top = `${item.y}px`;
+    item.el.style.transform = `translateY(${item.y}px)`;
 
     if (intersects(item)) {
       handleCatch(item.type);
@@ -212,7 +222,7 @@ function endGame() {
   const finalLove = Math.max(0, Math.min(100, Math.round((finalScore / config.loveGoal) * 100)));
   overlayTitle.textContent = `Love Meter: ${finalLove}%`;
   overlayText.textContent =
-    "Happy Women's Day to the most special woman in my life. I love you Violet. I'm sending you all my love. \n\nLove, Adam - Your Little Camp Boy";
+    "Happy Women's Day to the most special woman in my life. I love you and I cherish you Violet. I'm sending you all my love\n\nLove, Adam - Your Little Camp Boy";
   startBtn.textContent = "Play Again";
   overlay.classList.add("final");
   overlay.hidden = false;
@@ -251,19 +261,43 @@ leftBtn.addEventListener("click", () => movePlayer(-8));
 rightBtn.addEventListener("click", () => movePlayer(8));
 startBtn.addEventListener("click", startGame);
 
-let touchStartX = null;
+function movePlayerToClientX(clientX) {
+  const rect = game.getBoundingClientRect();
+  if (!rect.width) return;
+  const pct = ((clientX - rect.left) / rect.width) * 100;
+  playerX = Math.max(6, Math.min(94, pct));
+  setPlayerPosition();
+}
 
-game.addEventListener("touchstart", (e) => {
-  touchStartX = e.touches[0].clientX;
+game.addEventListener("pointerdown", (e) => {
+  if (!running) return;
+  movePlayerToClientX(e.clientX);
 });
 
-game.addEventListener("touchmove", (e) => {
-  if (!running || touchStartX === null) return;
-  const currentX = e.touches[0].clientX;
-  const dx = currentX - touchStartX;
-  movePlayer(dx / 18);
-  touchStartX = currentX;
+game.addEventListener("pointermove", (e) => {
+  if (!running || (e.pointerType !== "touch" && e.pointerType !== "pen")) return;
+  movePlayerToClientX(e.clientX);
 });
+
+function startHold(delta) {
+  movePlayer(delta);
+  holdTimer = window.setInterval(() => movePlayer(delta), 70);
+}
+
+function stopHold() {
+  if (!holdTimer) return;
+  window.clearInterval(holdTimer);
+  holdTimer = null;
+}
+
+leftBtn.addEventListener("pointerdown", () => startHold(-5));
+rightBtn.addEventListener("pointerdown", () => startHold(5));
+leftBtn.addEventListener("pointerup", stopHold);
+rightBtn.addEventListener("pointerup", stopHold);
+leftBtn.addEventListener("pointercancel", stopHold);
+rightBtn.addEventListener("pointercancel", stopHold);
+leftBtn.addEventListener("pointerleave", stopHold);
+rightBtn.addEventListener("pointerleave", stopHold);
 
 updateHud();
 setPlayerPosition();
