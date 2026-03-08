@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Violet's March 8 Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="top card">
+        <p class="eyebrow">March 8 Game</p>
+        <h1>Violet's Tulip Rush</h1>
+        <p class="sub">Catch tulips and hearts. Avoid rain clouds. Beat your best score.</p>
+      </section>
+
+      <section class="hud card">
+        <div><span>Best</span><strong id="best">0</strong></div>
+        <div><span>Time</span><strong id="time">30</strong></div>
+        <div><span>Combo</span><strong id="combo">x1</strong></div>
+      </section>
+
+      <section class="game-wrap card">
+        <div id="game" class="game" aria-label="Game area">
+          <aside class="love-meter" aria-label="Love meter">
+            <p>Love</p>
+            <div class="meter-track">
+              <div id="loveFill" class="meter-fill"></div>
+            </div>
+            <strong id="loveValue">0%</strong>
+          </aside>
+          <div id="player" class="player" aria-hidden="true">🧺</div>
+          <div id="popup" class="popup" aria-live="polite" hidden></div>
+          <div id="overlay" class="overlay">
+            <h2 id="overlayTitle">Tap Start</h2>
+            <p id="overlayText">Collect 🌷 + 💖 and dodge ☁️</p>
+            <button id="startBtn" class="btn">Start Game</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls card">
+        <button id="leftBtn" class="btn ghost">Left</button>
+        <button id="rightBtn" class="btn ghost">Right</button>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
