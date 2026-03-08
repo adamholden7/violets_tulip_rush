@@ -4,12 +4,12 @@ const config = {
   spawnMs: 430,
   itemFallSpeed: 2.15,
   minSpawnMs: 210,
-  loveGoal: 260,
+  loveGoal: 420,
   cloudPenalty: 7,
   bombPenalty: 14,
-  tulipPoints: 5,
-  heartPoints: 8,
-  kinderPoints: 10,
+  tulipPoints: 3,
+  heartPoints: 5,
+  kinderPoints: 7,
   cheerMessages: [
     "Way to go cutie patootie!",
     "Keep kicking butt baby!",
@@ -237,7 +237,7 @@ function handleCatch(item) {
     score += config.kinderPoints * combo;
     points += config.kinderPoints * combo;
   }
-  combo = Math.min(9, combo + 1);
+  combo = Math.min(7, combo + 1);
 
   const now = Date.now();
   if (now - lastCheerAt > 1700 && (combo % 3 === 0 || Math.random() < 0.22)) {
