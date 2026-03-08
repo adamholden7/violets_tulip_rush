@@ -112,52 +112,49 @@ h1 {
 .love-meter {
   position: absolute;
   left: 10px;
-  top: 12px;
-  bottom: 12px;
-  width: 74px;
+  right: 10px;
+  top: 10px;
+  height: 56px;
   z-index: 6;
   border: 1px solid #f3b7d7;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.82);
   display: grid;
-  justify-items: center;
-  align-content: start;
-  padding: 0.38rem 0.35rem 0.5rem;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.6rem;
 }
 
 .love-meter p {
-  margin: 0 0 0.35rem;
+  margin: 0;
   font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: #8f5776;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .meter-track {
-  width: 30px;
-  flex: 1;
-  min-height: 170px;
-  height: calc(100% - 56px);
+  width: 100%;
+  height: 14px;
   border: 1px solid #f2c3dc;
   border-radius: 999px;
   background: linear-gradient(180deg, #fff8fc, #ffe6f3);
   overflow: hidden;
-  display: flex;
-  align-items: flex-end;
 }
 
 .meter-fill {
-  width: 100%;
-  height: 0%;
-  background: linear-gradient(180deg, #ffb3d9 0%, #ff7abc 50%, #e63995 100%);
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #ffb3d9 0%, #ff7abc 50%, #e63995 100%);
   border-radius: 999px;
-  transition: height 180ms ease-out;
+  transition: width 180ms ease-out;
   box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.45);
 }
 
 .love-meter strong {
-  margin-top: 0.35rem;
   font-size: 0.85rem;
   color: #7a2b58;
 }
@@ -318,19 +315,9 @@ h1 {
   border: 1px solid #f0c0d8;
 }
 
-.controls {
-  display: none;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.65rem;
-}
-
 @media (max-width: 760px) {
   .hud {
     grid-template-columns: 1fr 1fr 1fr;
-  }
-
-  .controls {
-    display: grid;
   }
 
   .player {
@@ -339,13 +326,15 @@ h1 {
   }
 
   .love-meter {
-    width: 62px;
     left: 8px;
+    right: 8px;
+    height: 50px;
+    gap: 0.45rem;
+    padding: 0.4rem 0.5rem;
   }
 
   .meter-track {
-    width: 24px;
-    min-height: 130px;
+    height: 12px;
   }
 
   .btn {
