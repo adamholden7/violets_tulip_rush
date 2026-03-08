@@ -1,6 +1,6 @@
 const config = {
   herName: "Violet",
-  duration: 30,
+  duration: 30, 
   spawnMs: 500,
   itemFallSpeed: 1.85,
   minSpawnMs: 250,
