@@ -1,10 +1,10 @@
 const config = {
   herName: "Violet",
-  duration: 30, 
-  spawnMs: 500,
-  itemFallSpeed: 1.85,
-  minSpawnMs: 250,
-  loveGoal: 220,
+  duration: 30,
+  spawnMs: 430,
+  itemFallSpeed: 2.15,
+  minSpawnMs: 210,
+  loveGoal: 260,
   cloudPenalty: 7,
   bombPenalty: 14,
   tulipPoints: 5,
@@ -50,9 +50,9 @@ let timers = { spawn: null, tick: null, frame: null };
 let lastCheerAt = 0;
 
 if (isMobile) {
-  config.spawnMs = 440;
-  config.itemFallSpeed = 2.2;
-  config.minSpawnMs = 220;
+  config.spawnMs = 360;
+  config.itemFallSpeed = 2.45;
+  config.minSpawnMs = 170;
 }
 
 const bestKey = `march8-best-${config.herName.toLowerCase()}`;
@@ -102,7 +102,7 @@ function scheduleSpawn() {
   const progress = getProgress();
   const nextMs = Math.max(
     config.minSpawnMs,
-    config.spawnMs - progress * 220 + Math.random() * 70
+    config.spawnMs - progress * 250 + Math.random() * 55
   );
   timers.spawn = window.setTimeout(scheduleSpawn, nextMs);
 }
@@ -112,13 +112,13 @@ function spawnItem() {
 
   const roll = Math.random();
   const progress = getProgress();
-  const cloudThreshold = 0.08 + progress * 0.1;
-  const bombThreshold = 0.02 + progress * 0.08;
+  const cloudThreshold = 0.09 + progress * 0.1;
+  const bombThreshold = 0.08 + progress * 0.14;
   let type = "tulip";
 
-  if (roll < 0.38) type = "tulip";
-  else if (roll < 0.62) type = "heart";
-  else if (roll < 0.8) type = "kinder";
+  if (roll < 0.32) type = "tulip";
+  else if (roll < 0.52) type = "heart";
+  else if (roll < 0.7) type = "kinder";
   else if (roll < 0.8 + cloudThreshold) type = "cloud";
   else if (roll < 0.8 + cloudThreshold + bombThreshold) type = "bomb";
   else type = "tulip";
@@ -252,7 +252,7 @@ function gameLoop() {
   if (!running) return;
 
   items = items.filter((item) => {
-    item.y += config.itemFallSpeed * getDifficultyFactor() + Math.min(1.4, combo * 0.08);
+    item.y += config.itemFallSpeed * getDifficultyFactor() + Math.min(1.6, combo * 0.1);
     item.el.style.transform = `translateY(${item.y}px)`;
 
     if (intersects(item)) {
