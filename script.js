@@ -3,18 +3,21 @@ const config = {
   duration: 30,
   spawnMs: 500,
   itemFallSpeed: 1.85,
+  minSpawnMs: 250,
   loveGoal: 220,
   cloudPenalty: 7,
+  bombPenalty: 14,
   tulipPoints: 5,
   heartPoints: 8,
   kinderPoints: 10,
   cheerMessages: [
     "Way to go cutie patootie!",
-    "You're so good!",
+    "Keep kicking butt baby!",
     "Go little camp girl!",
     "Go baby go!!",
     "молодец любимая",
     "Keep rocking cutie.",
+    "Pete & Adam & George love you!",
     "Your little camp boy is proud of you."
   ]
 };
@@ -45,7 +48,9 @@ let timers = { spawn: null, tick: null, frame: null };
 let lastCheerAt = 0;
 
 if (isMobile) {
-  config.spawnMs = 560;
+  config.spawnMs = 440;
+  config.itemFallSpeed = 2.2;
+  config.minSpawnMs = 220;
 }
 
 const bestKey = `march8-best-${config.herName.toLowerCase()}`;
@@ -77,12 +82,43 @@ function movePlayer(delta) {
   setPlayerPosition();
 }
 
+function getProgress() {
+  return Math.min(1, Math.max(0, 1 - timeLeft / config.duration));
+}
+
+function getDifficultyFactor() {
+  const progress = getProgress();
+  return 1 + progress * 1.2 + (isMobile ? 0.2 : 0);
+}
+
+function scheduleSpawn() {
+  if (!running) return;
+
+  spawnItem();
+
+  const progress = getProgress();
+  const nextMs = Math.max(
+    config.minSpawnMs,
+    config.spawnMs - progress * 220 + Math.random() * 70
+  );
+  timers.spawn = window.setTimeout(scheduleSpawn, nextMs);
+}
+
 function spawnItem() {
   if (!running) return;
 
   const roll = Math.random();
-  const type =
-    roll < 0.5 ? "tulip" : roll < 0.78 ? "heart" : roll < 0.94 ? "kinder" : "cloud";
+  const progress = getProgress();
+  const cloudThreshold = 0.08 + progress * 0.1;
+  const bombThreshold = 0.02 + progress * 0.08;
+  let type = "tulip";
+
+  if (roll < 0.38) type = "tulip";
+  else if (roll < 0.62) type = "heart";
+  else if (roll < 0.8) type = "kinder";
+  else if (roll < 0.8 + cloudThreshold) type = "cloud";
+  else if (roll < 0.8 + cloudThreshold + bombThreshold) type = "bomb";
+  else type = "tulip";
   const el = document.createElement("div");
   el.className = "item";
 
@@ -90,6 +126,7 @@ function spawnItem() {
   if (type === "heart") el.textContent = "💖";
   if (type === "kinder") el.textContent = "🍫";
   if (type === "cloud") el.textContent = "☁️";
+  if (type === "bomb") el.textContent = "💣";
 
   const x = 6 + Math.random() * 88;
   el.style.left = `${x}%`;
@@ -148,6 +185,11 @@ function handleCatch(type) {
     combo = 1;
     return;
   }
+  if (type === "bomb") {
+    score -= config.bombPenalty;
+    combo = 1;
+    return;
+  }
 
   if (type === "tulip") score += config.tulipPoints * combo;
   if (type === "heart") score += config.heartPoints * combo;
@@ -167,7 +209,7 @@ function gameLoop() {
   if (!running) return;
 
   items = items.filter((item) => {
-    item.y += config.itemFallSpeed + Math.min(1.2, combo * 0.07);
+    item.y += config.itemFallSpeed * getDifficultyFactor() + Math.min(1.4, combo * 0.08);
     item.el.style.transform = `translateY(${item.y}px)`;
 
     if (intersects(item)) {
@@ -197,7 +239,7 @@ function clearItems() {
 
 function endGame() {
   running = false;
-  clearInterval(timers.spawn);
+  clearTimeout(timers.spawn);
   clearInterval(timers.tick);
   cancelAnimationFrame(timers.frame);
   popup.hidden = true;
@@ -221,7 +263,7 @@ function endGame() {
   const finalLove = Math.max(0, Math.min(100, Math.round((finalScore / config.loveGoal) * 100)));
   overlayTitle.textContent = `Love Meter: ${finalLove}%`;
   overlayText.textContent =
-    "Happy Women's Day to the most special woman in my life. I love you and I cherish you Violet. I'm sending you all my love\n\nLove, Adam - Your Little Camp Boy";
+  "Happy Women's Day to the most special woman in my life. I love you Violet. I'm sending you all my love\n\nLove, Adam - Your Little Camp Boy";
   startBtn.textContent = "Play Again";
   overlay.classList.add("final");
   overlay.hidden = false;
@@ -240,7 +282,7 @@ function startGame() {
   overlay.classList.remove("final");
   overlay.hidden = true;
 
-  timers.spawn = setInterval(spawnItem, config.spawnMs);
+  scheduleSpawn();
   timers.tick = setInterval(() => {
     timeLeft -= 1;
     updateHud();
