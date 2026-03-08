@@ -101,6 +101,8 @@ h1 {
   height: min(62vh, 500px);
   border-radius: 16px;
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: contain;
   border: 1px solid #f3c2dc;
   background:
     radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.6), transparent 26%),
@@ -177,7 +179,7 @@ h1 {
 
 .item {
   font-size: 1.9rem;
-  will-change: transform, top;
+  will-change: transform;
 }
 
 .overlay {
@@ -238,7 +240,9 @@ h1 {
   padding: 0.72rem 1.25rem;
   font-weight: 800;
   font-size: clamp(1.1rem, 3.8vw, 2rem);
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
+  max-width: min(92%, 600px);
   text-shadow: 0 2px 0 #fff;
   box-shadow: 0 12px 26px rgba(173, 44, 112, 0.24);
   opacity: 0;
@@ -331,6 +335,7 @@ h1 {
 
   .player {
     font-size: 2.35rem;
+    transition: none;
   }
 
   .love-meter {
@@ -341,5 +346,9 @@ h1 {
   .meter-track {
     width: 24px;
     min-height: 130px;
+  }
+
+  .btn {
+    min-height: 48px;
   }
 }
