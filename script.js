@@ -30,6 +30,7 @@ const overlayText = document.getElementById("overlayText");
 const startBtn = document.getElementById("startBtn");
 
 const bestEl = document.getElementById("best");
+const pointsEl = document.getElementById("points");
 const timeEl = document.getElementById("time");
 const comboEl = document.getElementById("combo");
 const loveFillEl = document.getElementById("loveFill");
@@ -40,6 +41,7 @@ const isMobile = window.matchMedia("(max-width: 760px)").matches;
 
 let running = false;
 let score = 0;
+let points = 0;
 let combo = 1;
 let timeLeft = config.duration;
 let playerX = 50;
@@ -64,6 +66,7 @@ try {
 bestEl.textContent = String(bestScore);
 
 function updateHud() {
+  pointsEl.textContent = String(Math.max(0, points));
   timeEl.textContent = String(timeLeft);
   comboEl.textContent = `x${combo}`;
   const lovePercent = Math.max(0, Math.min(100, Math.round((Math.max(0, score) / config.loveGoal) * 100)));
@@ -179,21 +182,61 @@ function burstCheer() {
   window.setTimeout(() => burst.remove(), 820);
 }
 
-function handleCatch(type) {
+function explodeBombAt(item) {
+  const burst = document.createElement("div");
+  burst.className = "bomb-explosion";
+  burst.style.left = `${item.x}%`;
+  burst.style.top = `${Math.max(12, item.y)}px`;
+
+  const center = document.createElement("span");
+  center.className = "center";
+  center.textContent = "💥";
+  burst.appendChild(center);
+
+  for (let i = 0; i < 8; i += 1) {
+    const spark = document.createElement("span");
+    spark.className = "spark";
+    spark.textContent = i % 2 === 0 ? "✨" : "🔥";
+    const angle = (Math.PI * 2 * i) / 8;
+    const radius = 24 + Math.random() * 24;
+    spark.style.setProperty("--x", `${Math.cos(angle) * radius}px`);
+    spark.style.setProperty("--y", `${Math.sin(angle) * radius}px`);
+    spark.style.animationDelay = `${Math.random() * 60}ms`;
+    burst.appendChild(spark);
+  }
+
+  game.appendChild(burst);
+  window.setTimeout(() => burst.remove(), 700);
+}
+
+function handleCatch(item) {
+  const { type } = item;
   if (type === "cloud") {
     score -= config.cloudPenalty;
+    points -= config.cloudPenalty;
     combo = 1;
     return;
   }
   if (type === "bomb") {
+    explodeBombAt(item);
     score -= config.bombPenalty;
+    points -= config.bombPenalty;
     combo = 1;
     return;
   }
 
-  if (type === "tulip") score += config.tulipPoints * combo;
-  if (type === "heart") score += config.heartPoints * combo;
-  if (type === "kinder") score += config.kinderPoints * combo;
+  if (type === "tulip") {
+    score += config.tulipPoints * combo;
+    points += config.tulipPoints * combo;
+  }
+  if (type === "heart") {
+    score += config.heartPoints * combo;
+    points += config.heartPoints * combo;
+  }
+  if (type === "kinder") {
+    score += config.kinderPoints * combo;
+    points += config.kinderPoints * combo;
+  }
   combo = Math.min(9, combo + 1);
 
   const now = Date.now();
@@ -213,7 +256,7 @@ function gameLoop() {
     item.el.style.transform = `translateY(${item.y}px)`;
 
     if (intersects(item)) {
-      handleCatch(item.type);
+      handleCatch(item);
       item.el.remove();
       updateHud();
       return false;
@@ -246,17 +289,18 @@ function endGame() {
   popup.classList.remove("show");
 
   const finalScore = Math.max(0, score);
+  const finalPoints = Math.max(0, points);
   let prior = 0;
   try {
     prior = Number(localStorage.getItem(bestKey) || 0);
-    if (finalScore > prior) {
-      localStorage.setItem(bestKey, String(finalScore));
-      bestEl.textContent = String(finalScore);
+    if (finalPoints > prior) {
+      localStorage.setItem(bestKey, String(finalPoints));
+      bestEl.textContent = String(finalPoints);
     }
   } catch {
-    if (finalScore > bestScore) {
-      bestScore = finalScore;
-      bestEl.textContent = String(finalScore);
+    if (finalPoints > bestScore) {
+      bestScore = finalPoints;
+      bestEl.textContent = String(finalPoints);
     }
   }
 
@@ -272,6 +316,7 @@ function endGame() {
 function startGame() {
   running = true;
   score = 0;
+  points = 0;
   combo = 1;
   timeLeft = config.duration;
   playerX = 50;
