@@ -205,7 +205,6 @@ h1 {
 
 .overlay.final p {
   max-width: 30ch;
-  white-space: pre-line;
   font-size: clamp(1.1rem, 3vw, 1.5rem);
   line-height: 1.35;
 }
@@ -273,6 +272,33 @@ h1 {
   animation: burstOut 720ms ease-out forwards;
 }
 
+.bomb-explosion {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9;
+}
+
+.bomb-explosion .center {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  font-size: 2rem;
+  animation: boomCenter 480ms ease-out forwards;
+}
+
+.bomb-explosion .spark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  font-size: 1rem;
+  animation: boomSpark 560ms ease-out forwards;
+}
+
 @keyframes popBurst {
   0% {
     transform: translateX(-50%) scale(0.5) rotate(-3deg);
@@ -296,6 +322,34 @@ h1 {
   100% {
     opacity: 0;
     transform: translate(var(--x), var(--y)) scale(1.2);
+  }
+}
+
+@keyframes boomCenter {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.45);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+@keyframes boomSpark {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) scale(1);
   }
 }
 
